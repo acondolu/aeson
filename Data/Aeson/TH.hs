@@ -128,6 +128,7 @@ import Data.Aeson.Types.Internal ((<?>), JSONPathElement(Key))
 import Data.Aeson.Types.FromJSON (parseOptionalFieldWith)
 import Data.Aeson.Types.ToJSON (fromPairs, pair)
 import Data.ByteString.Builder as B
+import Data.ByteString.Builder.Prim as P
 import qualified Data.ByteString.Lazy.Char8 as C (unpack)
 import Control.Monad (liftM2, unless, when)
 import Data.Foldable (foldr')
@@ -363,7 +364,7 @@ consToValue target jc opts instTys cons = do
       let decs = map
             (\(k,v) ->
               let str = C.unpack $ B.toLazyByteString $ EB.string k
-              in valD (varP v) (normalB $ [|E.Encoding (B.shortByteString (fromString str))|]) [])
+              in valD (varP v) (normalB $ [|E.Encoding (P.primMapListBounded P.charUtf8 str)|]) [])
             (H.toList labels)
       letE decs $ pure e'
 
